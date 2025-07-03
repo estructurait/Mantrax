@@ -11,7 +11,7 @@
 
     FloatLayout:
 
-        # Tu layout principal centrado y responsive:
+        # layout principal centrado y responsive:
         BoxLayout:
             orientation: 'vertical'
             size_hint: 1, 1
@@ -362,7 +362,7 @@
             height: 30
 
 <Button>:
-    # Esto puedes dejarlo en tu <DetalleTareasPopup> o en tu estilo global
+    
     text_size: self.size        # usa todo el ancho/alto del botón para envolver
     halign: 'center'
     valign: 'middle'
@@ -370,7 +370,7 @@
     # Ajuste dinámico del tamaño de fuente al ancho:
     on_size: self.font_size = self.width * 0.15
 
-<DetalleTareasPopup@Popup>: #Venta de detalles de tareas a realizar con sus respectivos checks de validacion.
+<DetalleTareasPopup@Popup>: #Ventana de detalles de tareas a realizar con sus respectivos checks de validacion.
    
     title: "Detalle de Tareas"
     size_hint: 0.9, 0.9
@@ -856,10 +856,6 @@
                 size_hint_x: 0.25
                 on_release: root.registrar()
 
-
-
-#:import dp kivy.metrics.dp
-
 <DataCell@Label>:
     size_hint_y: None
     height: dp(80)
@@ -874,9 +870,6 @@
             rectangle: (self.x, self.y, self.width, self.height)
             width: 1
     on_size: self.font_size = min(dp(18), min(self.width * 0.15, self.height * 0.4))
-
-
-
 
 <DataButton@Button>:
     size_hint_y: None
@@ -947,9 +940,7 @@
                     DataCell:
                         text: 'Finalizar'
 
-                    # — aquí vuelcas dinámicamente con Python —
-                    #   Factory.DataCell(text=…) y Factory.DataButton(text='Ir')
-
+                    
             BoxLayout:
                 size_hint_y: None
                 height: dp(50)
@@ -1001,13 +992,13 @@
                 height: dp(30)
                 text_size: self.size
 
-        # 2 SECCIÓN PRINCIPAL: encabezados de tabla + filas
+        # SECCIÓN PRINCIPAL: encabezados de tabla + filas
         BoxLayout:
             id: main_layout
             orientation: 'vertical'
             spacing: dp(5)
 
-            # 2.1 Encabezados de columna (Motivo / Realizó)
+            #Encabezados de columna (Motivo / Realizó)
             GridLayout:
                 id: header_grid
                 cols: 2
@@ -1035,7 +1026,7 @@
                     size_hint_x: 0.15
                     text_size: self.size
 
-            # 2.2 Filas de datos en ScrollView
+            #  Filas de datos en ScrollView
             ScrollView:
                 size_hint_y: 1
 
@@ -1048,7 +1039,7 @@
                     size_hint_y: None
                     height: self.minimum_height
 
-        # 3 Observaciones y hora parada
+        # Observaciones y hora parada
         BoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
@@ -1087,7 +1078,7 @@
             height: dp(40)
             on_text: root.on_obs_text(self.text)
 
-        # 4 Barra de progreso
+        # Barra de progreso
         BoxLayout:
             size_hint_y: None
             height: dp(25)
@@ -1096,7 +1087,7 @@
                 max: 100
                 value: 0
 
-        # 5 Selectores Fecha/Hora (Inicio / Fin)
+        #  Selectores Fecha/Hora (Inicio / Fin)
         BoxLayout:
             id: date_layout
             orientation: 'horizontal'
@@ -1105,7 +1096,7 @@
             height: dp(100)
             padding: dp(20), 0
 
-        # 6 Botones al pie
+        # Botones al pie
         BoxLayout:
             size_hint_y: None
             height: dp(40)
