@@ -1,4 +1,7 @@
-import pyodbc
+
+import os
+from dotenv import load_dotenv
+import psycopg2
 import kivy
 from kivy.config import Config
 Config.set('kivy', 'keyboard_mode', 'system')
@@ -48,38 +51,28 @@ from kivy.properties import StringProperty
 
 
 #Window.size = (1080, 1920)
+def  obtener_conexion_sqlserver():
+    # Carga variables de .env
+    load_dotenv()
 
+    servidor     = os.getenv("PG_SERVIDOR")
+    puerto     = os.getenv("PG_PUERTO", 5432)
+    basedatos = os.getenv("PG_BASEDATOS")
+    usuario     = os.getenv("PG_USUARIO")
+    password = os.getenv("PG_CONTRASEÑA")
 
-def obtener_conexion_sqlserver():#Conectar a la base de datos
-    """
-    Establece y retorna una conexión a SQL Server usando ODBC.
-    Autocommit queda deshabilitado para manejar manualmente las transacciones.
-    """
-    #server   = '181.15.193.16,1444'   # Punto de acceso externo
-    server = 'mc100.dos-hermanos.com,1444'    # Punto de acceso interno
-    database = 'mantenimiento_dh'
-    username = 'david'
-    password = 'DHdvd1802'
-
-    conn_str = (
-        "DRIVER={ODBC Driver 18 for SQL Server};"
-        f"SERVER={server};"
-        f"DATABASE={database};"
-        f"UID={username};"
-        f"PWD={password};"
-        "Encrypt=yes;"
-        "TrustServerCertificate=yes;"
+    conexion = psycopg2.connect(
+        host=servidor,
+        port=puerto,
+        dbname=basedatos,
+        user=usuario,
+        password=password
     )
+    conexion.autocommit = False
+    print("Conexión exitosa a PostgreSQL")
+    return conexion
 
-    try:
-        conexion = pyodbc.connect(conn_str)
-        # Deshabilitamos el auto-commit para controlar commits manualmente
-        conexion.autocommit = False
-        print("Conexión exitosa a SQL Server en función obtener_conexion_sqlserver.")
-        return conexion
-    except pyodbc.Error as e:
-        print("Error al conectar a SQL Server:", e)
-        raise
+
 def obtener_usuarios_y_contraseñas():# Obtener usuarios y contraseñas desde la base de datos
     conexion = obtener_conexion_sqlserver()
     cursor = conexion.cursor()
