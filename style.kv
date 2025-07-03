@@ -1,0 +1,1167 @@
+#:import dp kivy.metrics.dp
+#:import Factory kivy.factory.Factory
+
+<LoginScreen>: #Ventana principal de Inicio (Login)
+    canvas.before:
+        Color:
+            rgba: 0.078, 0.178, 0.178, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    FloatLayout:
+
+        # Tu layout principal centrado y responsive:
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: 1, 1
+            padding: self.width * 0.1, self.height * 0.2
+            spacing: self.height * 0.03
+
+            Image:
+                source: 'Login/logo.png'
+                fit_mode: 'fill'
+                size_hint_x: 0.5
+                size_hint_y: None
+                height: self.width * 0.5
+                pos_hint: {'center_x': 0.5}
+
+            TextInput:
+                id: username_input
+                hint_text: 'Ingrese su usuario'
+                size_hint_x: 0.8
+                size_hint_y: None
+                height: dp(40)
+                multiline: False
+                pos_hint: {'center_x': 0.5}
+
+            TextInput:
+                id: password_input
+                hint_text: 'Ingrese su contraseña'
+                password: True
+                size_hint_x: 0.8
+                size_hint_y: None
+                height: dp(40)
+                multiline: False
+                pos_hint: {'center_x': 0.5}
+
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_x: 0.8
+                size_hint_y: None
+                height: dp(24)
+                pos_hint: {'center_x': 0.5}
+                spacing: dp(4)
+
+                CheckBox:
+                    id: show_password_checkbox
+                    size: dp(24), dp(24)
+                    on_active: root.on_checkbox_active(self, self.active)
+
+                Label:
+                    text: 'Mostrar Contraseña'
+                    font_size: dp(14)
+                    size_hint_x: None
+                    width: self.texture_size[0]
+                    valign: 'middle'
+                    halign: 'left'
+
+            Button:
+                text: 'Iniciar sesión'
+                size_hint_x: 0.7
+                size_hint_y: None
+                height: dp(48)
+                pos_hint: {'center_x': 0.5}
+                font_size: dp(18)
+                on_release: root.on_login()
+
+        # Botón salir fijo en esquina inferior izquierda, 20% ancho de pantalla
+        Button:
+            background_normal: 'Login/salir.png'
+            background_down:   'Login/salir.png'
+            size_hint_x: None
+            size_hint_y: None
+            height: dp(48)
+            pos_hint: {'x': 0, 'y': 0}
+            on_release: app.stop()
+
+<MantenimientoScreen>:
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 0.078, 0.178, 0.178, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # Datos del usuario (40% ancho) en el margen superior derecho
+        Label:
+            id: user_info_label
+            text: "Usuario:\nResponsable:\nEstablecimiento:"
+            font_size: dp(13)
+            size_hint: 0.5, None
+            height: dp(60)
+            pos_hint: {'right': 1, 'top': 1}
+
+        # Contenedor centrado con los dos botones (50% ancho)
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'center'
+            size_hint: 1, 1
+
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: 0.5, None
+                height: dp(200)
+                spacing: dp(10)
+
+                Button:
+                    text: 'ORDENES DE\n TRABAJO'
+                    size_hint_x: 1
+                    size_hint_y: None
+                    height: dp(120)
+                    pos_hint: {'center_x': 0.5}
+                    # Ajusta el font_size al 15% del ancho del botón cada vez que cambie de tamaño
+                    on_size: self.font_size = self.width * 0.12
+                    halign: 'center'
+                    #valign: 'middle'
+                    #text_size: self.size
+                    on_press: root.abrir_ordenes_trabajo()  # o la acción que corresponda
+
+                Button:
+                    text: 'PREVENTIVOS'
+                    size_hint_x: 1
+                    size_hint_y: None
+                    height: dp(120)
+                    pos_hint: {'center_x': 0.5}
+                    # Al iniciarse y cada vez que cambie el tamaño, ajusta el font_size:
+                    on_size: self.font_size = self.width * 0.15
+                    # (0.15 = 15% del ancho del botón; ajústalo a tu gusto)
+                    on_press: root.abrir_preventivos()
+
+        # Botón Salir (20% ancho) en el margen inferior izquierdo
+        Button:
+            text: "Salir"
+            size_hint: 0.2, None
+            height: dp(50)
+            pos_hint: {'x': 0, 'y': 0}
+            background_color: 1, 0, 0, 1
+            font_size: dp(13)
+            on_press: root.cerrar_sesion(self)
+
+<DataCell@Label>:
+    text_size: self.width - dp(8), None   # deja 4dp de padding lateral
+    halign: 'center'
+    valign: 'middle'
+    size_hint_y: None
+    height: dp(80)
+
+    # Borde
+    canvas.after:
+        Color:
+            rgba: 1,1,1,1
+        Line:
+            rectangle: (self.x, self.y, self.width, self.height)
+            width: 1
+
+    # font_size = el menor entre 15% del ancho y 40% de la altura
+    on_size:
+        # en KV puedes usar min() directamente
+        self.font_size = min(self.width * 0.15, self.height * 0.4)
+
+<DataButton@Button>:
+    size_hint_y: None
+    height: dp(80)
+    on_size: self.font_size = self.height * 0.25
+    canvas.after:
+        Color:
+            rgba: 1,1,1,1
+        Line:
+            rectangle: (self.x, self.y, self.width, self.height)
+            width: 1
+
+<PreventivosScreen>:
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 0.078, 0.178, 0.178, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            id: main_layout
+            orientation: "vertical"
+            padding: 10
+            spacing: 10
+            size_hint: 1, 1.07 #1.07 ajusta sobre el margen superior el encabezado de la tabla
+
+            # Etiqueta de usuario...
+            Label:
+                id: user_info_label
+                text: ''
+                font_size: dp(12)
+                size_hint: None, None
+                size: dp(200), dp(60)
+                pos_hint: {'right': 1, 'top': 1}
+
+
+            ScrollView:
+                size_hint: 1, 0.8
+
+                GridLayout:
+                    id: data_grid
+                    cols: 5
+                    spacing: dp(5)
+
+                    # Vamos a filas de 80dp de alto
+                    row_force_default: True
+                    row_default_height: dp(80)
+
+                    size_hint_y: None
+                    height: self.minimum_height
+
+                    # Encabezados
+                    DataCell:
+                        text: "Sector"
+                    DataCell:
+                        text: "Equipo"
+                    DataCell:
+                        text: "Rutina"
+                    DataCell:
+                        text: "OT"
+                    DataCell:
+                        text: "Tareas"
+            Button:
+                text: "Volver"
+                size_hint: None, None
+                size: dp(100), dp(45)
+                font_size: dp(13)
+                on_release: root.volver(self)
+
+<BorderedButton>:
+    canvas.after:
+        Color:
+            rgba: 1, 1, 1, 1
+        Line:
+            rectangle: self.x, self.y, self.width, self.height
+            width: 1
+
+<BorderedLabel>:
+    canvas.after:
+        Color:
+            rgba: 1, 1, 1, 1
+        Line:
+            rectangle: self.x, self.y, self.width, self.height
+            width: 1
+
+<BorderedAnchorLayout>: #Recuadro/borde que separa las tareas y los checks.
+    canvas.after:
+        Color:
+            rgba: 1, 1, 1, 1
+        Line:
+            rectangle: self.x, self.y, self.width, self.height
+            width: 1
+
+<ComponenteRow>:
+    size_hint_y: None
+    height: 60
+    orientation: 'horizontal'
+    spacing: 5
+    padding: 5
+
+    
+
+    Spinner:
+        id: spinner
+        text: 'Seleccione'
+        values: [] 
+                    # lo rellenaremos desde Python
+        size_hint_x: 0.75
+        on_width:
+            # ajusta al 80% del ancho, pero como máximo 16dp
+            self.font_size = min(dp(16), self.width * 0.8)
+        
+
+    TextInput:
+        id: txt_cantidad
+        text: ''
+        multiline: False
+        input_filter: 'float'
+        size_hint_x: 0.15
+
+    Button:
+        id: btn_eliminar
+        text: 'X'
+        size_hint_x: 0.10
+
+<ComponentesModal@Popup>: #Estilo de la ventana de componentes uilizados y sus cantidades.
+    title: "Componentes utilizados"
+    size_hint: 0.8, 0.8
+    auto_dismiss: False
+
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 10
+
+        # Encabezado
+        Label:
+            text: "Componentes utilizados"
+            font_size: 16
+            bold: True
+            size_hint_y: None
+            height: 40
+
+        # Área para las filas (cada fila se agregará dinámicamente)
+        GridLayout:
+            id: filas_layout
+            cols: 1
+            spacing: 5
+            size_hint_y: None
+            height: self.minimum_height
+
+        # Botón para agregar fila
+        Button:
+            id: btn_agregar
+            text: "+"
+            size_hint: None, None
+            width: 60
+            height: 40
+            on_release: root.agregar_fila()
+
+        # Botón Volver: solo se habilita si todas las filas son válidas
+        Button:
+            id: btn_volver
+            text: "Volver"
+            size_hint: None, None
+            width: 80
+            height: 40
+            disabled: not root.todos_validos()
+            on_release: root.dismiss()
+
+<ColorProgressBar>: #Cambio de color de la barra de estado de las tareas
+    canvas.before:
+        Color:
+            rgba: root.bar_color
+        Rectangle:
+            pos: self.pos
+            size: self.width * (root.value / root.max), self.height
+    Label:
+        id: percentage_label
+        text: str(int(root.value / root.max * 100)) + "%"
+        # Posición centrada con respecto al widget ColorProgressBar
+        center_x: root.center_x
+        center_y: root.center_y
+
+<MyScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        ColorProgressBar:
+            id: my_progress_bar
+            size_hint_y: None
+            height: 30
+
+<Button>:
+    # Esto puedes dejarlo en tu <DetalleTareasPopup> o en tu estilo global
+    text_size: self.size        # usa todo el ancho/alto del botón para envolver
+    halign: 'center'
+    valign: 'middle'
+    shorten: False              # evita que se corte con "..." y fuerza el wrap
+    # Ajuste dinámico del tamaño de fuente al ancho:
+    on_size: self.font_size = self.width * 0.15
+
+<DetalleTareasPopup@Popup>: #Venta de detalles de tareas a realizar con sus respectivos checks de validacion.
+   
+    title: "Detalle de Tareas"
+    size_hint: 0.9, 0.9
+    background_color: 1, 1, 1, 1
+    auto_dismiss: False
+
+    BoxLayout:
+        id: popup_layout
+        orientation: 'vertical'
+        padding: dp(10)
+        spacing: dp(10)
+
+        # Encabezado con equipo y solicitud
+        BoxLayout:
+            id: header_layout
+            orientation: 'vertical'
+            size_hint_y: None
+            height: dp(60)
+            Label:
+                id: lbl_equipo
+                text: ""
+                font_size: dp(16)
+                bold: True
+                halign: 'center'
+                valign: 'middle'
+                size_hint_y: None
+                height: dp(30)
+                text_size: self.size
+            Label:
+                id: lbl_ot
+                text: ""
+                font_size: dp(14)
+                halign: 'center'
+                valign: 'middle'
+                size_hint_y: None
+                height: dp(30)
+                text_size: self.size
+
+        # Sección tareas + checkboxes
+        BoxLayout:
+            id: main_layout
+            orientation: 'vertical'
+            spacing: dp(10)
+
+            # Cabeceras
+            GridLayout:
+                id: header_grid
+                cols: 2
+                spacing: dp(5)
+                row_force_default: True
+                row_default_height: dp(60)
+                size_hint_y: None
+                height: self.minimum_height
+
+                BorderedLabel:
+                    text: 'Tareas'
+                    font_size: dp(18)
+                    bold: True
+                    halign: 'center'
+                    valign: 'middle'
+                    size_hint_x: 0.8
+                    text_size: self.size
+
+                BorderedLabel:
+                    text: 'Realizó'
+                    font_size: dp(18)
+                    bold: True
+                    halign: 'center'
+                    valign: 'middle'
+                    size_hint_x: 0.2
+                    text_size: self.size
+
+            # Filas de datos
+            ScrollView:
+                size_hint: 1, 1
+
+                GridLayout:
+                    id: rows_grid
+                    cols: 2
+                    spacing: dp(5)
+                    row_force_default: True
+                    row_default_height: dp(60)
+                    size_hint_y: None
+                    height: self.minimum_height
+
+        # Barra de progreso
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(25)
+            padding: 0, dp(5)
+            ColorProgressBar:
+                id: progress_bar
+                size_hint: 1, 1
+                value: 0
+
+        # Fecha y hora
+        BoxLayout:
+            id: date_layout
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(100)
+            spacing: dp(20)
+            padding: dp(20), 0
+
+            FechaHoraWidget:
+                title_text: 'Inicio'
+                fecha_default: root.fecha_inicio if hasattr(root, 'fecha_inicio') else ''
+                hora_default: root.hora_inicio if hasattr(root, 'hora_inicio') else ''
+                size_hint: 0.3, None
+                height: dp(60)
+
+            FechaHoraWidget:
+                title_text: 'Fin'
+                fecha_default: root.fecha_fin if hasattr(root, 'fecha_fin') else ''
+                hora_default: root.hora_fin if hasattr(root, 'hora_fin') else ''
+                size_hint: 0.3, None
+                height: dp(60)
+
+        # Observaciones
+        BoxLayout:
+            id: obs_layout
+            orientation: 'vertical'
+            size_hint_y: None
+            height: dp(100)
+            spacing: dp(5)
+
+            Label:
+                id: obs_label
+                text: "Observaciones (0/300)"
+                font_size: dp(14)
+                halign: 'left'
+                valign: 'middle'
+                size_hint_y: None
+                height: dp(30)
+                text_size: self.size
+
+            TextInput:
+                id: obs_input
+                multiline: True
+                font_size: dp(14)
+                size_hint_x: 0.95
+                height: dp(60)
+                # aquí llamamos al método que definimos justo arriba
+                on_text: root.on_obs_text(self.text)
+
+        # Botones de acción
+        BoxLayout:
+            id: btn_layout
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(40)
+            # Cada botón ocupa 25% del ancho
+            Button:
+                id: btn_volver
+                text: 'Volver'
+                size_hint_x: 0.25
+            Button:
+                id: btn_guardar
+                text: 'Guardar'
+                size_hint_x: 0.25
+            Button:
+                id: btn_finalizar
+                text: 'Finalizar'
+                size_hint_x: 0.25
+            Button:
+                id: btn_otras
+                text: 'Otras\n opciones'
+                size_hint_x: 0.25
+                # Con text_size + halign/valign + on_size heredados, ya se envolverá
+
+
+                # Añadir componente
+                Button:
+                    id: btn_añadir_comp
+                    text: "Añadir Componente"
+                    size_hint: None, None
+                    size: dp(170), dp(40)
+                    font_size: dp(14)
+
+<FechaHoraWidget@BoxLayout>:
+    # Declaramos las tres propiedades usadas en text:
+    title_text: ''
+    fecha_default: ''
+    hora_default: ''
+
+    orientation: 'vertical'
+    size_hint: None, None
+    width: dp(150)
+    height: dp(100)
+    spacing: dp(5)
+
+    # Título
+    Label:
+        text: root.title_text
+        font_size: dp(14)
+        size_hint_y: None
+        height: dp(20)
+        halign: 'center'
+        valign: 'middle'
+        text_size: self.size
+
+    # Fecha
+    TextInput:
+        id: fecha_input
+        text: root.fecha_default or 'dd/mm/aaaa'
+        multiline: False
+        size_hint: 1, None
+        height: dp(30)
+        halign: 'center'
+        on_size: self.font_size = self.width * 0.1
+
+    # Hora
+    TextInput:
+        id: hora_input
+        text: root.hora_default or 'hh:mm'
+        multiline: False
+        size_hint: 1, None
+        height: dp(30)
+        halign: 'center'
+        on_size: self.font_size = self.width * 0.1
+
+    # Mensajes de validación
+    Label:
+        id: msg_lbl
+        text: ''
+        color: 1, 0, 0, 1
+        font_size: dp(12)
+        size_hint_y: None
+        height: dp(20)
+        halign: 'center'
+        valign: 'middle'
+        text_size: self.size
+
+<AutoResizeTextField@TextInput>:
+    foreground_color: 1, 1, 1, 1
+    cursor_color:     1, 1, 1, 1
+
+<MDTextField>:
+    text_color_normal: 1, 1, 1, 1
+    text_color_focus:  1, 1, 1, 1
+
+<Spinner>:
+    color: 1, 1, 1, 1
+
+
+<CrearOTScreen>: #Generar OT a partir de un preventivo
+    name: 'crear_ot'
+    canvas.before:
+        Color:
+            rgba: 0.078, 0.178, 0.178, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(10)
+        spacing: dp(10)
+
+        # —————— Botón “Tareas” con texto autoajustable ——————
+        Button:
+            id: btn_add_task
+            text: 'Tareas'
+            size_hint_y: None
+            height: dp(35)
+            on_release: root.add_task_row()
+            # autoajuste de texto
+            text_size: self.size
+            halign: 'center'
+            valign: 'middle'
+            shorten: True
+            shorten_from: 'center'
+            font_size: min(self.height * 0.6, self.width / (len(self.text) if self.text else 1))
+            color: 1, 1, 1, 1  # texto blanco
+
+        # —————— Tabla de TAREAS ——————
+        ScrollView:
+            size_hint_y: 0.35
+            GridLayout:
+                id: tasks_grid
+                cols: 3
+                row_force_default: True
+                row_default_height: dp(40)
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(5)
+
+        # —————— Botón “Componentes” con texto autoajustable ——————
+        Button:
+            id: btn_add_comp
+            text: 'Componentes'
+            size_hint_y: None
+            height: dp(35)
+            on_release: root.add_comp_row()
+            # mismo autoajuste que el otro botón
+            text_size: self.size
+            halign: 'center'
+            valign: 'middle'
+            shorten: True
+            shorten_from: 'center'
+            font_size: min(self.height * 0.6, self.width / (len(self.text) if self.text else 1))
+            color: 1, 1, 1, 1  # texto blanco
+
+        # —————— Tabla de COMPONENTES ——————
+        ScrollView:
+            size_hint_y: 0.35
+            GridLayout:
+                id: comps_grid
+                cols: 3
+                row_force_default: True
+                row_default_height: dp(40)
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(5)
+
+        # —————— Observaciones con contador externo ——————
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.2
+            spacing: dp(2)
+
+            TextInput:
+                id: obs_input
+                hint_text: 'Observaciones'
+                font_size: dp(14)
+                multiline: True
+                padding: dp(10)
+                on_text: root.on_obs_text(self, self.text)
+
+
+            BoxLayout:
+                size_hint_y: None
+                height: dp(20)
+                padding: dp(10), 0
+                Label:
+                    id: obs_count
+                    text: '0/300'
+                    halign: 'left'
+                    valign: 'middle'
+                    text_size: self.size
+
+        # —————— Botones inferiores ——————
+        BoxLayout:
+            size_hint_y: None
+            height: dp(40)
+            spacing: dp(5)
+
+            Button:
+                id: btn_volver
+                text: 'Volver'
+                size_hint_x: 0.20
+                on_release: root.volver()
+
+            Widget:
+                size_hint_x: 0.55
+
+            Button:
+                id: btn_confirm
+                text: 'Confirmar OT'
+                size_hint_x: 0.25
+                disabled: True
+                on_release: root.confirmar_ot()
+
+<RegistrarTareaScreen>:
+    name: 'registrar_tarea'
+    canvas.before:
+        Color:
+            rgba: 0.078, 0.178, 0.178, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(10)
+        spacing: dp(10)
+
+        # — Botón Tareas —
+        Button:
+            text: 'Tareas'
+            size_hint_y: None
+            height: dp(35)
+            on_release: root.add_task_row()
+            text_size: self.size
+            halign: 'center'
+            valign: 'middle'
+            shorten: True
+            shorten_from: 'center'
+            font_size: min(self.height * 0.6, self.width / (len(self.text) if self.text else 1))
+            color: 1, 1, 1, 1  # texto blanco
+
+        # — Tabla de Tareas —
+        ScrollView:
+            size_hint_y: 0.35
+            GridLayout:
+                id: tasks_grid
+                cols: 3
+                row_force_default: True
+                row_default_height: dp(40)
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(5)
+
+        # — Botón Componentes —
+        Button:
+            text: 'Componentes'
+            size_hint_y: None
+            height: dp(35)
+            on_release: root.add_comp_row()
+            text_size: self.size
+            halign: 'center'
+            valign: 'middle'
+            shorten: True
+            shorten_from: 'center'
+            font_size: min(self.height * 0.6, self.width / (len(self.text) if self.text else 1))
+            color: 1, 1, 1, 1  # texto blanco
+
+        # — Tabla de Componentes —
+        ScrollView:
+            size_hint_y: 0.35
+            GridLayout:
+                id: comps_grid
+                cols: 4
+                row_force_default: True
+                row_default_height: dp(40)
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(5)
+
+        # — Observaciones —
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: dp(100)
+            spacing: dp(2)
+
+            TextInput:
+                id: obs_input
+                hint_text: 'Observaciones'
+                font_size: dp(14)
+                multiline: True
+                padding: dp(10)
+                on_text: root.on_obs_text(self, self.text)
+
+            BoxLayout:
+                size_hint_y: None
+                height: dp(20)
+                padding: dp(10), 0
+
+                Label:
+                    id: obs_count
+                    text: '0/300'
+                    halign: 'left'
+                    valign: 'middle'
+                    text_size: self.size
+
+
+        # — Fecha y Hora (se llena en on_pre_enter) —
+        BoxLayout:
+            id: date_layout
+            size_hint_y: None
+            height: dp(100)
+            spacing: dp(10)
+
+        # — Botones Inferiores —
+        BoxLayout:
+            size_hint_y: None
+            height: dp(40)
+            spacing: dp(5)
+
+            Button:
+                text: 'Volver'
+                size_hint_x: 0.20
+                on_release: root.volver()
+
+            Widget:
+                size_hint_x: 0.55
+
+            Button:
+                id: btn_registrar
+                text: 'Registrar'
+                size_hint_x: 0.25
+                on_release: root.registrar()
+
+
+
+#:import dp kivy.metrics.dp
+
+<DataCell@Label>:
+    size_hint_y: None
+    height: dp(80)
+    size_hint_x: 0.85
+    text_size: self.width - dp(8), None
+    halign: 'center'
+    valign: 'middle'
+    canvas.after:
+        Color:
+            rgba: 1,1,1,1
+        Line:
+            rectangle: (self.x, self.y, self.width, self.height)
+            width: 1
+    on_size: self.font_size = min(dp(18), min(self.width * 0.15, self.height * 0.4))
+
+
+
+
+<DataButton@Button>:
+    size_hint_y: None
+    height: dp(80)
+    canvas.after:
+        Color:
+            rgba: 1,1,1,1
+        Line:
+            rectangle: (self.x, self.y, self.width, self.height)
+            width: 1
+    on_size:
+        self.font_size = self.height * 0.25
+
+
+<CheckCell@AnchorLayout>:
+    size_hint_x: 0.15
+    size_hint_y: None
+    height: dp(80)
+    anchor_x: 'center'
+    anchor_y: 'center'
+
+    # dibuja el mismo borde que DataCell
+    canvas.after:
+        Color:
+            rgba: 1, 1, 1, 1
+        Line:
+            rectangle: (self.x, self.y, self.width, self.height)
+            width: 1
+
+
+<OrdenesTrabajoScreen>:
+    name: 'ordenes_trabajo'
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 0.078, 0.178, 0.178, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: dp(10)
+            spacing: dp(10)
+            size_hint: 1, 1
+
+            ScrollView:
+                size_hint_y: 0.9
+
+                GridLayout:
+                    id: ot_grid
+                    cols: 5                      # 5 columnas
+                    spacing: dp(5)
+                    row_force_default: True     # fuerza altura uniforme
+                    row_default_height: dp(80)  # fija cada fila en 80dp
+                    size_hint_y: None
+                    height: self.minimum_height
+
+                    # — Encabezados —
+                    DataCell:
+                        text: 'Fecha'
+                    DataCell:
+                        text: 'OT'
+                    DataCell:
+                        text: 'Sector'
+                    DataCell:
+                        text: 'Equipo-Estructura'
+                    DataCell:
+                        text: 'Finalizar'
+
+                    # — aquí vuelcas dinámicamente con Python —
+                    #   Factory.DataCell(text=…) y Factory.DataButton(text='Ir')
+
+            BoxLayout:
+                size_hint_y: None
+                height: dp(50)
+                padding: dp(10), 0
+                Button:
+                    text: 'Volver'
+                    size_hint: None, None
+                    size: dp(120), dp(40)
+                    font_size: dp(16)
+                    on_release: root.volver()
+
+<DetalleOTPopup>:
+    title: "Detalle de OT"
+    size_hint: 0.9, 0.9
+    auto_dismiss: False
+    background_color: 0.15, 0.15, 0.15, 1
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(10)
+        spacing: dp(10)
+
+        # 1 CABECERA FIJA (equipo + OT)
+        BoxLayout:
+            id: header_layout
+            orientation: 'vertical'
+            size_hint_y: None
+            height: dp(60)
+            padding: dp(5), 0
+
+            Label:
+                id: lbl_equipo
+                text: ""
+                font_size: dp(16)
+                bold: True
+                halign: 'center'
+                valign: 'middle'
+                size_hint_y: None
+                height: dp(30)
+                text_size: self.size
+
+            Label:
+                id: lbl_ot
+                text: ""
+                font_size: dp(14)
+                halign: 'center'
+                valign: 'middle'
+                size_hint_y: None
+                height: dp(30)
+                text_size: self.size
+
+        # 2 SECCIÓN PRINCIPAL: encabezados de tabla + filas
+        BoxLayout:
+            id: main_layout
+            orientation: 'vertical'
+            spacing: dp(5)
+
+            # 2.1 Encabezados de columna (Motivo / Realizó)
+            GridLayout:
+                id: header_grid
+                cols: 2
+                spacing: dp(5)
+                row_force_default: True
+                row_default_height: dp(40)
+                size_hint_y: None
+                height: self.minimum_height
+
+                BorderedLabel:
+                    text: 'Motivo'
+                    font_size: dp(18)
+                    bold: True
+                    halign: 'center'
+                    valign: 'middle'
+                    size_hint_x: 0.85
+                    text_size: self.size
+
+                BorderedLabel:
+                    text: 'Realizó'
+                    font_size: dp(18)
+                    bold: True
+                    halign: 'center'
+                    valign: 'middle'
+                    size_hint_x: 0.15
+                    text_size: self.size
+
+            # 2.2 Filas de datos en ScrollView
+            ScrollView:
+                size_hint_y: 1
+
+                GridLayout:
+                    id: rows_grid
+                    cols: 2
+                    spacing: [dp(5), dp(20)]
+                    row_force_default: True
+                    row_default_height: dp(60)
+                    size_hint_y: None
+                    height: self.minimum_height
+
+        # 3 Observaciones y hora parada
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(60)
+            spacing: dp(10)
+
+            Label:
+                id: obs_ot_label
+                text: ""
+                halign: 'left'
+                valign: 'middle'
+                text_size: self.size
+
+            Label:
+                id: hora_ot_label
+                text: ""
+                halign: 'right'
+                valign: 'middle'
+                text_size: self.size
+
+        Label:
+            id: obs_label
+            text: "Observaciones (0/300)"
+            font_size: dp(14)
+            halign: 'left'
+            valign: 'middle'
+            size_hint_y: None
+            height: dp(30)
+            text_size: self.size
+
+        TextInput:
+            id: obs_input
+            multiline: True
+            font_size: dp(14)
+            size_hint_y: None
+            height: dp(40)
+            on_text: root.on_obs_text(self.text)
+
+        # 4 Barra de progreso
+        BoxLayout:
+            size_hint_y: None
+            height: dp(25)
+            ColorProgressBar:
+                id: progress_bar
+                max: 100
+                value: 0
+
+        # 5 Selectores Fecha/Hora (Inicio / Fin)
+        BoxLayout:
+            id: date_layout
+            orientation: 'horizontal'
+            spacing: dp(20)
+            size_hint_y: None
+            height: dp(100)
+            padding: dp(20), 0
+
+        # 6 Botones al pie
+        BoxLayout:
+            size_hint_y: None
+            height: dp(40)
+            spacing: dp(10)
+
+            Button:
+                id: btn_volver
+                text: "Volver"
+                size_hint_x: 0.33
+
+            Button:
+                id: btn_guardar
+                text: "Guardar"
+                size_hint_x: 0.33
+                disabled: True
+
+            Button:
+                id: btn_finalizar_ot
+                text: "Finalizar"
+                size_hint_x: 0.33
+                
+
+            Button:
+                id: btn_añadir_comp
+                text: "Añadir\ncomponentes"
+                size_hint_x: 0.3
+                font_size: dp(12)
+
+
+<ComponentesPopup@Popup>:
+    title: "Seleccionar Componentes"
+    size_hint: 0.8, 0.8
+    auto_dismiss: False
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(10)
+        spacing: dp(10)
+
+        ScrollView:
+            GridLayout:
+                id: componentes_grid
+                cols: 2
+                row_force_default: True
+                row_default_height: dp(40)
+                spacing: dp(5)
+                size_hint_y: None
+                height: self.minimum_height
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(40)
+            spacing: dp(10)
+            Button:
+                id: btn_cancelar
+                text: "Cancelar"
+            Button:
+                id: btn_guardar_comp
+                text: "Guardar"
