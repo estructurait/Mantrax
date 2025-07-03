@@ -3163,7 +3163,7 @@ class OrdenesTrabajoScreen(Screen):
             # 1) Cerrar el popup de confirmación
             popup.dismiss()
             print("→ Finalizar Orden Trabajo: confirmación ACEPTADA")
-            # —— 0) Verificar que exista al menos un registro en otmto_planmto
+            # Verificar que exista al menos un registro en otmto_planmto
             conn_check = obtener_conexion_sqlserver()
             cur_check = conn_check.cursor()
             cur_check.execute(
@@ -3250,9 +3250,6 @@ class OrdenesTrabajoScreen(Screen):
         )
         popup.open()
 
-    
-        
-       
    
 
 class MyApp(MDApp):
@@ -3273,6 +3270,5 @@ class MyApp(MDApp):
 if __name__ == '__main__':
     MyApp().run()
 
-    #conn = obtener_conexion_sqlserver()
-    #print(conn)
+
 
